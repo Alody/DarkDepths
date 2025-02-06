@@ -24,10 +24,7 @@ class Player(Entity):
 
         for key, value in kwargs.items():
             setattr(self, key, value)
-            
-        # Trigger animation on movement
-        if held_keys['d'] or held_keys['a'] or held_keys['w'] or held_keys['s']:
-            self.animate_sprite()
+
 
     def update_uvs(self):
         row = self.frame // self.frames_per_row

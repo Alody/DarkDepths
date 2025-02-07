@@ -1,21 +1,42 @@
-from ursina import *
+import pygame
+from constants import *
 from player import Player
+from enemy import Enemy
 
-# Initialize the game
-app = Ursina()
+# Initialize Pygame
+pygame.init()
 
-# Create the player
-player = Player()
+# Set up display
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Dark Depths")
 
-# Create a simple menu
-def start_game():
-    print("Game Started!")
-    menu.enabled = False
+# Create player instance
+player = Player(240, 360)
+enemy = Enemy(300, 300)
+all_sprites = pygame.sprite.Group(player)
+all_sprites.add(enemy)
 
-menu = Entity(parent=camera.ui, enabled=True)
-Text("Dark Depths", parent=menu, scale=2, y=0.3)
-Button("Start", scale=(0.2, 0.1), y=0, on_click=start_game, parent=menu)
-Button("Quit", scale=(0.2, 0.1), y=-0.15, on_click=application.quit, parent=menu)
+# Game loop
+clock = pygame.time.Clock()
+running = True
+while running:
+    screen.fill((53, 59, 72))  # Background color (Arsenic)
 
-# Run the game
-app.run()
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    player.move_on_command()
+
+    # Update
+    all_sprites.update()
+
+    # Draw
+    all_sprites.draw(screen)
+
+    # Refresh display
+    pygame.display.flip()
+    clock.tick(FPS)
+
+pygame.quit()

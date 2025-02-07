@@ -1,36 +1,72 @@
-from ursina import *
+import pygame
+from constants import *
 
-class Player(Entity):
-    def __init__(self, **kwargs):
+# Load sprite sheets (idle, walking,)
+idle_anim = pygame.image.load("assets/Characters(100x100)/Soldier/Soldier/Soldier-Idle.png")
+
+idle_frames = []
+for i in range(SPRITE_COLUMNS):
+    frame = idle_anim.subsurface(pygame.Rect(i * SPRITE_FRAME_WIDTH, 0, SPRITE_FRAME_WIDTH, SPRITE_FRAME_HEIGHT))
+    frame = pygame.transform.scale(frame, (int(SPRITE_FRAME_WIDTH * SPRITE_SCALE), int(SPRITE_FRAME_HEIGHT * SPRITE_SCALE)))
+    idle_frames.append(frame)
+
+walking_anim = pygame.image.load("assets/Characters(100x100)/Soldier/Soldier/Soldier-Walk.png")
+
+walking_frames = []
+for i in range(SPRITE_COLUMNS):
+    frame = walking_anim.subsurface(pygame.Rect(i * SPRITE_FRAME_WIDTH, 0, SPRITE_FRAME_WIDTH, SPRITE_FRAME_HEIGHT))
+    frame = pygame.transform.scale(frame, (int(SPRITE_FRAME_WIDTH * SPRITE_SCALE), int(SPRITE_FRAME_HEIGHT * SPRITE_SCALE)))
+    walking_frames.append(frame)
+
+# Sprite class
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y):
         super().__init__()
-        self.model = 'quad'
-        self.texture = 'base char/idle.png'  # Sprite sheet
-        self.color = color.white
-        self.scale_y = 2
-        self.speed = 5
-        self.health = 100
-        self.armor = 10
+        self.frames = idle_frames
+        self.current_frame = 0
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect(center=(x, y))
+        self.last_update = pygame.time.get_ticks()  # Track last frame change time
+        self.state = "idle"
 
-        # Sprite sheet properties
-        self.frame = 0
-        self.frames_per_row = 4  # Number of columns
-        self.frames_per_column = 3  # Number of rows
-        self.total_frames = self.frames_per_row * self.frames_per_column
+    def update(self):
+        now = pygame.time.get_ticks()
+        
+        speed = ANIMATION_SPEED if self.state == "idle" else ANIMATION_SPEED // 2  # 2x faster when walking
 
-        # Set proper texture scaling
-        self.texture_scale = Vec2(1 / self.frames_per_row, 1 / self.frames_per_column)
+        if now - self.last_update > speed:
+            self.last_update = now
+        
+            if self.state == "walking":
+                self.frames = walking_frames  # Set frames to walking animation
+            else:
+                self.frames = idle_frames  # Set frames to idle animation
 
-        self.update_uvs()
+            # Cycle through the frames
+            self.current_frame = (self.current_frame + 1) % len(self.frames)
+            self.image = self.frames[self.current_frame]
 
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    
+    def move_on_command(self):
+        keys = pygame.key.get_pressed()
+        moving = False  # Track movement state
 
+        # Allow movement in both X and Y directions simultaneously
+        if keys[pygame.K_a]:
+            self.rect.x -= 5
+            moving = True
 
-    def update_uvs(self):
-        row = self.frame // self.frames_per_row
-        column = self.frame % self.frames_per_row
-        self.texture_offset = Vec2(column / self.frames_per_row, 1 - (row + 1) / self.frames_per_column)
+        if keys[pygame.K_d]:
+            self.rect.x += 5
+            moving = True
 
-    def animate_sprite(self):
-        self.frame = (self.frame + 1) % self.total_frames
-        self.update_uvs()
+        if keys[pygame.K_w]:
+            self.rect.y -= 5
+            moving = True
+
+        if keys[pygame.K_s]:
+            self.rect.y += 5
+            moving = True
+
+        # Update state
+        self.state = "walking" if moving else "idle"

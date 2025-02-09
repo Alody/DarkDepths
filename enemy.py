@@ -31,7 +31,9 @@ class Enemy(pygame.sprite.Sprite):
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(self.frames)
             self.image = self.frames[self.current_frame]
-        
+        self.speed_x = random.choice([-3, -2, -1, 1, 2, 3])
+        self.speed_y = random.choice([-3, -2, -1, 1, 2, 3])
+
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
 

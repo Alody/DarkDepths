@@ -22,8 +22,8 @@ class Enemy(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         self.rect.x = random.randint(0, WINDOW_WIDTH - self.rect.width)
         self.rect.y = random.randint(0, WINDOW_HEIGHT - self.rect.height)
-        self.speed_x = random.randint(-5, 5)
-        self.speed_y = random.randint(-5, 5)
+        self.speed_x = random.randint(-2, 2)
+        self.speed_y = random.randint(-2, 2)
 
     def update(self):
         now = pygame.time.get_ticks()
@@ -31,8 +31,6 @@ class Enemy(pygame.sprite.Sprite):
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(self.frames)
             self.image = self.frames[self.current_frame]
-        self.speed_x = random.choice([-3, -2, -1, 1, 2, 3])
-        self.speed_y = random.choice([-3, -2, -1, 1, 2, 3])
 
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y

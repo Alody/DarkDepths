@@ -1,1 +1,1 @@
-game made with pygame
+"game" made with pygame

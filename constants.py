@@ -8,3 +8,5 @@ SPRITE_FRAME_WIDTH = 100
 SPRITE_FRAME_HEIGHT = 100
 SPRITE_COLUMNS = 4  # Number of frames in the sprite sheet
 ANIMATION_SPEED = 250  # Time per frame in milliseconds
+
+# a
